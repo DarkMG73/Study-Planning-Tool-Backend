@@ -1,10 +1,9 @@
 const dotenv = require("dotenv");
-const connectDB = require("./backend/config/db.js");
-const userRoute = require("./backend/routes/userRoute.js");
-// import User from "./backend/models/userModel";
-const adminRoute = require("./backend/routes/adminRoute.js");
-const catalogItemRoute = require("./backend/routes/catalogItemRoute.js");
-const siteContentRoute = require("./backend/routes/siteContentRoute.js");
+const connectDB = require("./api/config/db.js");
+const userRoute = require("./api/routes/userRoute.js");
+// import User from "./api/models/userModel";
+const adminRoute = require("./api/routes/adminRoute.js");
+const studyPlanItemRoute = require("./api/routes/studyPlanItemRoute.js");
 const bodyParser = require("body-parser");
 const jsonwebtoken = require("jsonwebtoken");
 const express = require("express");
@@ -47,7 +46,7 @@ const userLimiter = rateLimit({
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
 });
 // Set user route limits
-const catalogItemLimiter = rateLimit({
+const studyPlanItemLimiter = rateLimit({
   windowMs: 10 * 60 * 1000, // 10 minutes
   max: 100, // Limit each IP to 100 requests per `window` (here, per 10 minutes)
   message:
@@ -157,11 +156,8 @@ try {
 //Creating API for user
 app.use("/api/users", userLimiter, userRoute);
 
-//Creating API for Catalog Item Info
-app.use("/api/ms1", catalogItemLimiter, catalogItemRoute);
-
-//Creating API for Site Content Info
-app.use("/api/content", catalogItemLimiter, siteContentRoute);
+//Creating API for Study Plan Item Info
+app.use("/api/ms1", studyPlanItemLimiter, studyPlanItemRoute);
 
 //Creating API for admin functions
 app.use("/api/special-admin/", userLimiter, adminRoute);
