@@ -98,17 +98,25 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "Study Planning Tool@workspace:."
   dependencies:
+    async: ^3.2.4
     bcrypt: ^5.1.1
     body-parser: ^1.20.2
+    cookie-parser: ^1.4.6
     cors: ^2.8.5
     dotenv: ^16.3.1
     express: ^4.18.2
     express-async-handler: ^1.2.0
+    express-handlebars: ^7.1.2
+    express-rate-limit: ^7.0.1
     helmet: ^7.0.0
+    image-downloader: ^4.3.0
     jsonwebtoken: ^9.0.2
     mongoose: ^7.5.2
     morgan: ^1.10.0
+    nodemailer: ^6.9.5
+    nodemailer-express-handlebars: ^6.1.0
     nodemon: ^3.0.1
+    password-validator: ^5.3.0
   languageName: unknown
   linkType: soft
 
@@ -228,6 +236,13 @@ __metadata:
   version: 1.1.1
   resolution: "array-flatten@npm:1.1.1"
   checksum: a9925bf3512d9dce202112965de90c222cd59a4fbfce68a0951d25d965cf44642931f40aac72309c41f12df19afa010ecadceb07cfff9ccc1621e99d89ab5f3b
+  languageName: node
+  linkType: hard
+
+"async@npm:^3.2.4":
+  version: 3.2.4
+  resolution: "async@npm:3.2.4"
+  checksum: 43d07459a4e1d09b84a20772414aa684ff4de085cbcaec6eea3c7a8f8150e8c62aa6cd4e699fe8ee93c3a5b324e777d34642531875a0817a35697522c1b02e89
   languageName: node
   linkType: hard
 
@@ -471,10 +486,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cookie-parser@npm:^1.4.6":
+  version: 1.4.6
+  resolution: "cookie-parser@npm:1.4.6"
+  dependencies:
+    cookie: 0.4.1
+    cookie-signature: 1.0.6
+  checksum: 1e5a63aa82e8eb4e02d2977c6902983dee87b02e87ec5ec43ac3cb1e72da354003716570cd5190c0ad9e8a454c9d3237f4ad6e2f16d0902205a96a1c72b77ba5
+  languageName: node
+  linkType: hard
+
 "cookie-signature@npm:1.0.6":
   version: 1.0.6
   resolution: "cookie-signature@npm:1.0.6"
   checksum: f4e1b0a98a27a0e6e66fd7ea4e4e9d8e038f624058371bf4499cfcd8f3980be9a121486995202ba3fca74fbed93a407d6d54d43a43f96fd28d0bd7a06761591a
+  languageName: node
+  linkType: hard
+
+"cookie@npm:0.4.1":
+  version: 0.4.1
+  resolution: "cookie@npm:0.4.1"
+  checksum: bd7c47f5d94ab70ccdfe8210cde7d725880d2fcda06d8e375afbdd82de0c8d3b73541996e9ce57d35f67f672c4ee6d60208adec06b3c5fc94cebb85196084cf8
   languageName: node
   linkType: hard
 
@@ -666,6 +698,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"express-handlebars@npm:^7.1.2":
+  version: 7.1.2
+  resolution: "express-handlebars@npm:7.1.2"
+  dependencies:
+    glob: ^10.3.3
+    graceful-fs: ^4.2.11
+    handlebars: ^4.7.8
+  checksum: 41339f426500ab8e973fa9e98c0bad7800072131f53f7f55d76f39ab741afc00870d9ebca72024e1f85c874eb663a6fdb4d4d1d0a6796a7ff791add9abfd14a1
+  languageName: node
+  linkType: hard
+
+"express-rate-limit@npm:^7.0.1":
+  version: 7.0.1
+  resolution: "express-rate-limit@npm:7.0.1"
+  peerDependencies:
+    express: ^4 || ^5
+  checksum: fa1e43b7c0123eaed97fc0a53625c08ec135d5c54b81a9e039758594b9520eba1d68e46e9fc9f88f356a1763a6db91e3b964b87b4f55129785718bfa25c669b3
+  languageName: node
+  linkType: hard
+
 "express@npm:^4.18.2":
   version: 4.18.2
   resolution: "express@npm:4.18.2"
@@ -726,6 +778,16 @@ __metadata:
     statuses: 2.0.1
     unpipe: ~1.0.0
   checksum: 92effbfd32e22a7dff2994acedbd9bcc3aa646a3e919ea6a53238090e87097f8ef07cced90aa2cc421abdf993aefbdd5b00104d55c7c5479a8d00ed105b45716
+  languageName: node
+  linkType: hard
+
+"follow-redirects@npm:^1.15.0":
+  version: 1.15.3
+  resolution: "follow-redirects@npm:1.15.3"
+  peerDependenciesMeta:
+    debug:
+      optional: true
+  checksum: 584da22ec5420c837bd096559ebfb8fe69d82512d5585004e36a3b4a6ef6d5905780e0c74508c7b72f907d1fa2b7bd339e613859e9c304d0dc96af2027fd0231
   languageName: node
   linkType: hard
 
@@ -873,6 +935,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"glob@npm:^10.3.3":
+  version: 10.3.5
+  resolution: "glob@npm:10.3.5"
+  dependencies:
+    foreground-child: ^3.1.0
+    jackspeak: ^2.0.3
+    minimatch: ^9.0.1
+    minipass: ^5.0.0 || ^6.0.2 || ^7.0.0
+    path-scurry: ^1.10.1
+  bin:
+    glob: dist/cjs/src/bin.js
+  checksum: 564f4799cae48c0bcc841c88a20b539b5701c27ed5596f8623f588b3c523262d3fc20eb1ea89cab9c75b0912faf40ca5501fc835f982225d0d0599282b09e97a
+  languageName: node
+  linkType: hard
+
 "glob@npm:^7.1.3, glob@npm:^7.1.4":
   version: 7.2.3
   resolution: "glob@npm:7.2.3"
@@ -887,10 +964,28 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graceful-fs@npm:^4.2.6":
+"graceful-fs@npm:^4.2.11, graceful-fs@npm:^4.2.6":
   version: 4.2.11
   resolution: "graceful-fs@npm:4.2.11"
   checksum: ac85f94da92d8eb6b7f5a8b20ce65e43d66761c55ce85ac96df6865308390da45a8d3f0296dd3a663de65d30ba497bd46c696cc1e248c72b13d6d567138a4fc7
+  languageName: node
+  linkType: hard
+
+"handlebars@npm:^4.7.8":
+  version: 4.7.8
+  resolution: "handlebars@npm:4.7.8"
+  dependencies:
+    minimist: ^1.2.5
+    neo-async: ^2.6.2
+    source-map: ^0.6.1
+    uglify-js: ^3.1.4
+    wordwrap: ^1.0.0
+  dependenciesMeta:
+    uglify-js:
+      optional: true
+  bin:
+    handlebars: bin/handlebars
+  checksum: 00e68bb5c183fd7b8b63322e6234b5ac8fbb960d712cb3f25587d559c2951d9642df83c04a1172c918c41bcfc81bfbd7a7718bbce93b893e0135fc99edea93ff
   languageName: node
   linkType: hard
 
@@ -1010,6 +1105,15 @@ __metadata:
   version: 1.0.1
   resolution: "ignore-by-default@npm:1.0.1"
   checksum: 441509147b3615e0365e407a3c18e189f78c07af08564176c680be1fabc94b6c789cad1342ad887175d4ecd5225de86f73d376cec8e06b42fd9b429505ffcf8a
+  languageName: node
+  linkType: hard
+
+"image-downloader@npm:^4.3.0":
+  version: 4.3.0
+  resolution: "image-downloader@npm:4.3.0"
+  dependencies:
+    follow-redirects: ^1.15.0
+  checksum: 3730dae0f15c5922f5553b5583f1954adb81e3a24ff4f7835b51fd9f419cf8d59574210c61127b3fe1c91e4ccb083c528b154c936a67a960ec640261de363b56
   languageName: node
   linkType: hard
 
@@ -1345,6 +1449,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"minimist@npm:^1.2.5":
+  version: 1.2.8
+  resolution: "minimist@npm:1.2.8"
+  checksum: 75a6d645fb122dad29c06a7597bddea977258957ed88d7a6df59b5cd3fe4a527e253e9bbf2e783e4b73657f9098b96a5fe96ab8a113655d4109108577ecf85b0
+  languageName: node
+  linkType: hard
+
 "minipass-collect@npm:^1.0.2":
   version: 1.0.2
   resolution: "minipass-collect@npm:1.0.2"
@@ -1552,6 +1663,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"neo-async@npm:^2.6.2":
+  version: 2.6.2
+  resolution: "neo-async@npm:2.6.2"
+  checksum: deac9f8d00eda7b2e5cd1b2549e26e10a0faa70adaa6fdadca701cc55f49ee9018e427f424bac0c790b7c7e2d3068db97f3093f1093975f2acb8f8818b936ed9
+  languageName: node
+  linkType: hard
+
 "node-addon-api@npm:^5.0.0":
   version: 5.1.0
   resolution: "node-addon-api@npm:5.1.0"
@@ -1593,6 +1711,23 @@ __metadata:
   bin:
     node-gyp: bin/node-gyp.js
   checksum: 78b404e2e0639d64e145845f7f5a3cb20c0520cdaf6dda2f6e025e9b644077202ea7de1232396ba5bde3fee84cdc79604feebe6ba3ec84d464c85d407bb5da99
+  languageName: node
+  linkType: hard
+
+"nodemailer-express-handlebars@npm:^6.1.0":
+  version: 6.1.0
+  resolution: "nodemailer-express-handlebars@npm:6.1.0"
+  peerDependencies:
+    express-handlebars: ">= 6.0.0"
+    nodemailer: ">= 6.0.0"
+  checksum: a398a95fa7ef90fa4de7a261e2708e430c018879200db09ced9cb17dd516cd6d10778f1748b8ac27967840c753e2424e5483edf1df50fe207d9a775bd37900b8
+  languageName: node
+  linkType: hard
+
+"nodemailer@npm:^6.9.5":
+  version: 6.9.5
+  resolution: "nodemailer@npm:6.9.5"
+  checksum: e39282795e09f0685691b1511f74e2dc4703ba6ecd55d964c2f8a1b54591e5b284228c90cd6a203b498a5a1ea2610415306e8d7eda0b3cd9ebdcb210f05b2846
   languageName: node
   linkType: hard
 
@@ -1741,6 +1876,13 @@ __metadata:
   version: 1.3.3
   resolution: "parseurl@npm:1.3.3"
   checksum: 407cee8e0a3a4c5cd472559bca8b6a45b82c124e9a4703302326e9ab60fc1081442ada4e02628efef1eb16197ddc7f8822f5a91fd7d7c86b51f530aedb17dfa2
+  languageName: node
+  linkType: hard
+
+"password-validator@npm:^5.3.0":
+  version: 5.3.0
+  resolution: "password-validator@npm:5.3.0"
+  checksum: 4ffd5e6aa24cd262a136a5d338cff0396a45d129e688768e66aa19ad2ff536c65be12c1289e26901859ac1a04eff58aa3c49e3f1196dc5790e45c36aa7b66b4b
   languageName: node
   linkType: hard
 
@@ -2067,6 +2209,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"source-map@npm:^0.6.1":
+  version: 0.6.1
+  resolution: "source-map@npm:0.6.1"
+  checksum: 59ce8640cf3f3124f64ac289012c2b8bd377c238e316fb323ea22fbfe83da07d81e000071d7242cad7a23cd91c7de98e4df8830ec3f133cb6133a5f6e9f67bc2
+  languageName: node
+  linkType: hard
+
 "sparse-bitfield@npm:^3.0.3":
   version: 3.0.3
   resolution: "sparse-bitfield@npm:3.0.3"
@@ -2217,6 +2366,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"uglify-js@npm:^3.1.4":
+  version: 3.17.4
+  resolution: "uglify-js@npm:3.17.4"
+  bin:
+    uglifyjs: bin/uglifyjs
+  checksum: 7b3897df38b6fc7d7d9f4dcd658599d81aa2b1fb0d074829dd4e5290f7318dbca1f4af2f45acb833b95b1fe0ed4698662ab61b87e94328eb4c0a0d3435baf924
+  languageName: node
+  linkType: hard
+
 "undefsafe@npm:^2.0.5":
   version: 2.0.5
   resolution: "undefsafe@npm:2.0.5"
@@ -2321,6 +2479,13 @@ __metadata:
   dependencies:
     string-width: ^1.0.2 || 2 || 3 || 4
   checksum: d5fc37cd561f9daee3c80e03b92ed3e84d80dde3365a8767263d03dacfc8fa06b065ffe1df00d8c2a09f731482fcacae745abfbb478d4af36d0a891fad4834d3
+  languageName: node
+  linkType: hard
+
+"wordwrap@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "wordwrap@npm:1.0.0"
+  checksum: 2a44b2788165d0a3de71fd517d4880a8e20ea3a82c080ce46e294f0b68b69a2e49cff5f99c600e275c698a90d12c5ea32aff06c311f0db2eb3f1201f3e7b2a04
   languageName: node
   linkType: hard
 

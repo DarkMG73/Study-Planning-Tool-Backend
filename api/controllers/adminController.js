@@ -1,7 +1,7 @@
 const download = require("image-downloader");
 const path = require("path");
-const allCatalogItemsList = require("../data/allCatalogItemsList.json");
-const catalogItemSchema = require("../models/catalogItemModel.js");
+// const allStudyPlanItemsList = require("../data/allStudyPlanItemsList.json");
+const studyPlanItemSchema = require("../models/studyPlanItemModel.js");
 const mongoose = require("mongoose");
 
 // const options = {
@@ -29,17 +29,17 @@ module.exports.downloadPicsFromDbPhotoURL = (req, res) => {
 };
 
 /// BULK LOAD CATALOG ITEMS TO DB ///////////////////
-const loadCatalogItemsToDatabase = (catalogItemsToAdd, DBName) => {
-  const catalogItemsToAddArray = Object.keys(catalogItemsToAdd).map(
-    (key) => catalogItemsToAdd[key]
+const loadStudyPlanItemsToDatabase = (studyPlanItemsToAdd, DBName) => {
+  const studyPlanItemsToAddArray = Object.keys(studyPlanItemsToAdd).map(
+    (key) => studyPlanItemsToAdd[key]
   );
-  console.log("catalogItemsToAddArray", catalogItemsToAddArray.length);
-  console.log("ADMIN: Saving Bulk CatalogItems to DataBase");
-  const CatalogItem = mongoose.model(DBName, catalogItemSchema);
+  console.log("studyPlanItemsToAddArray", studyPlanItemsToAddArray.length);
+  console.log("ADMIN: Saving Bulk StudyPlanItems to DataBase");
+  const StudyPlanItem = mongoose.model(DBName, studyPlanItemSchema);
 
-  const newCatalogItem = new CatalogItem(catalogItemsToAddArray);
-  newCatalogItem.collection
-    .insertMany(catalogItemsToAddArray, {
+  const newStudyPlanItem = new StudyPlanItem(studyPlanItemsToAddArray);
+  newStudyPlanItem.collection
+    .insertMany(studyPlanItemsToAddArray, {
       ordered: true,
     })
     .then((doc) => {
@@ -50,4 +50,4 @@ const loadCatalogItemsToDatabase = (catalogItemsToAdd, DBName) => {
     });
 };
 
-// loadCatalogItemsToDatabase(allCatalogItemsList, "ms1-catalog-item")
+// loadStudyPlanItemsToDatabase(allStudyPlanItemsList, "studyPlan-item")

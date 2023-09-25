@@ -4,10 +4,10 @@ const mongoose = require("mongoose");
 const adminList = require("../data/adminList.js");
 
 function getStudyPlanItemModelAndCollection(user) {
-  // let collection = user ? user._id : "ms1-studyPlan-item";
-  let collection = "ms1-studyPlan-items";
-  // if (user && adminList["ms1-studyPlan-item"].includes(user._id)) {
-  //   collection = "ms1-studyPlan-item";
+  // let collection = user ? user._id : "study-plan-item";
+  let collection = "study-plan-items";
+  // if (user && adminList["study-plan-item"].includes(user._id)) {
+  //   collection = "study-plan-item";
   // }
   console.log("------ Collection: ", collection);
   return mongoose.model(collection, studyPlanItemSchema);
@@ -240,11 +240,14 @@ module.exports.getAdminStudyPlanItems = asyncHandler(async (req, res) => {
   console.log("--- getAdminStudyPlanItems ---");
   if (!req.user) res.status(401).json({ message: "Access not authorized" });
 
-  if (!adminList["ms1-studyPlan-item"].includes(req.user._id))
+  if (
+    adminList["stud-plan-admin"] &&
+    !adminList["stud-plan-admin"].includes(req.user._id)
+  )
     res
       .status(403)
       .json({ message: "Sorry, you do not have permission to access this." });
-  const collection = "ms1-studyPlan-item";
+  const collection = "study-plan-item";
   const StudyPlanItem = mongoose.model(collection, studyPlanItemSchema);
   const studyPlanItems = await StudyPlanItem.find({});
   res.json(studyPlanItems);

@@ -157,7 +157,7 @@ try {
 app.use("/api/users", userLimiter, userRoute);
 
 //Creating API for Study Plan Item Info
-app.use("/api/ms1", studyPlanItemLimiter, studyPlanItemRoute);
+app.use("/api/studyPlan", studyPlanItemLimiter, studyPlanItemRoute);
 
 //Creating API for admin functions
 app.use("/api/special-admin/", userLimiter, adminRoute);

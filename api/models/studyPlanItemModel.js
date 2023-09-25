@@ -73,7 +73,7 @@ const catalogItemSchema = mongoose.Schema(
     acomp: {
       type: String,
     },
-    utl: {
+    url: {
       type: String,
     },
     identifier: {

@@ -45,17 +45,31 @@ module.exports.register = asyncHandler(async (req, res) => {
 
   newUser.hash_password = bcrypt.hashSync(req.body.password, 10);
 
-  newUser.save(function (err, user) {
-    if (err) {
-      console.log(" --> Resgister err", err);
-      return res.status(400).send({
-        message: err,
-      });
-    } else {
-      user.hash_password = undefined;
-      return res.json(user);
-    }
-  });
+  newUser
+    .save()
+    .then((err, user) => {
+      if (err) {
+        console.log(" --> Resgister err", err);
+
+        return res.status(400).send({
+          message: err,
+        });
+      } else {
+        user.hash_password = undefined;
+        return res.json(user);
+      }
+    })
+    .catch((err) => {
+      if (err.name === "MongoError" && err.code === 11000) {
+        // Duplicate username
+        return res
+          .status(422)
+          .send({ succes: false, message: "User already exist!" });
+      }
+
+      // Some other error
+      return res.status(422).send(err);
+    });
 });
 
 ////////////////////////////////
@@ -63,17 +77,12 @@ module.exports.register = asyncHandler(async (req, res) => {
 ////////////////////////////////
 module.exports.sign_in = asyncHandler(async (req, res) => {
   console.log("sign in a user");
-  User.findOne(
-    {
-      email: req.body.email,
-    },
-    function (err, user) {
-      if (err) {
-        console.log(" --> sign_in req.body", req.body);
-        return res.status(401).json({
-          message: "There was a problem with authentication: " + err,
-        });
-      }
+  console.log("--> req.body", req.body);
+  User.findOne({
+    email: req.body.email,
+  })
+    .then((user) => {
+      console.log("--> user", user);
 
       if (!user || !user.comparePassword(req.body.password)) {
         return res.status(401).json({
@@ -103,6 +112,7 @@ module.exports.sign_in = asyncHandler(async (req, res) => {
             });
           }
         } else {
+          console.log("process.env.SECRET", process.env.SECRET);
           if (process.env.SECRET && process.env.SECRET != "undefined") {
             delete user._doc.isAdmin;
             return res.json({
@@ -129,14 +139,20 @@ module.exports.sign_in = asyncHandler(async (req, res) => {
           "There is a temporary server issue. Please try your request again. Error: NS | ",
           err
         );
+
         return res.status(500).json({
           message:
             "There is a temporary issue running part of the program on the server. Please try your request again and contact the website admin if the problem persists. Error: TC-UC | " +
             err,
         });
       }
-    }
-  );
+    })
+    .catch((err) => {
+      console.log(" --> Catch err", err);
+      return res.status(401).json({
+        message: "There was a problem with authentication: " + err,
+      });
+    });
 });
 
 ////////////////////////////////
@@ -403,95 +419,92 @@ exports.render_reset_password_template = function (req, res) {
 exports.forgot_password = function (req, res) {
   console.log(" --> forgot_password req.body", req.body);
 
-  User.findOne(
-    {
-      email: req.body.email,
-    },
-    function (err, user) {
-      if (err) {
-        console.log(" --> 1 forgot_password Find User Error", err);
-        return res.status(401).json({
-          message: "There was a problem with authentication: " + err,
-        });
-      }
-      if (!user) {
-        console.log(
-          " --> 2 forgot_password There was a problem with authentication: User " +
-            req.body.email +
-            " was not found."
-        );
-        return res.status(401).json({
-          message:
-            "There was a problem with authentication: User " +
-            req.body.email +
-            ' was not found. Please fix the email address or, if you are not signed up yet, use the "Sign Up" button to get started.',
-        });
-      }
-
-      try {
-        if (process.env.SECRET && process.env.SECRET != "undefined") {
-          const JWTToken = jwt.sign(
-            {
-              email: user.email,
-              fullName: user.fullName,
-              _id: user._id,
-              passwordReset: true,
-            },
-            process.env.SECRET,
-            // TODO: SEt THIS TO 10 MINUTES *********
-            { expiresIn: "1000 minutes" } // The httpOnly cookie expires in 10 minutes, so this would only apply if that cookie is tampered with.
-          );
-
-          const mailOptions = {
-            from: process.env.MAILER_EMAIL_ID,
-            to: user.email,
-            template: "forgot-password-email",
-            subject: "Password Reset Request",
-            text: "That was easy!",
-            context: {
-              url:
-                process.env.DOMAIN +
-                "api/users/auth/reset_password?token=" +
-                JWTToken,
-              name: "Mike",
-            },
-          };
-
-          sendEmail(mailOptions)
-            .then((emailResponse) => {
-              return res.status(250).json({
-                message: "The email was sent!",
-              });
-            })
-            .catch((err) => {
-              console.log("Send email error: ", err);
-              return res.status(403).json({
-                message:
-                  "There is an issue trying to send the email. Please try your request again. Error: EM-UC-1",
-              });
-            });
-        } else {
-          console.log(
-            "There is a temporary server issue. Please try your request again. Error: NS-UC 2"
-          );
-          return res.status(403).json({
-            message:
-              "There is a temporary issue accessing the required security data. Please try your request again. Error: NS-UC-2",
-          });
-        }
-      } catch (err) {
-        console.log(
-          "There is a temporary server issue. Please try your request again. Error: NS | ",
-          err
-        );
-        return res.status(500).json({
-          message:
-            "There is a temporary issue running part of the program on the server. Please try your request again and contact the website admin if the problem persists. Error: TC-UC | " +
-            err,
-        });
-      }
+  User.findOne({
+    email: req.body.email,
+  }).then((err, user) => {
+    if (err) {
+      console.log(" --> 1 forgot_password Find User Error", err);
+      return res.status(401).json({
+        message: "There was a problem with authentication: " + err,
+      });
     }
-  );
+    if (!user) {
+      console.log(
+        " --> 2 forgot_password There was a problem with authentication: User " +
+          req.body.email +
+          " was not found."
+      );
+      return res.status(401).json({
+        message:
+          "There was a problem with authentication: User " +
+          req.body.email +
+          ' was not found. Please fix the email address or, if you are not signed up yet, use the "Sign Up" button to get started.',
+      });
+    }
+
+    try {
+      if (process.env.SECRET && process.env.SECRET != "undefined") {
+        const JWTToken = jwt.sign(
+          {
+            email: user.email,
+            fullName: user.fullName,
+            _id: user._id,
+            passwordReset: true,
+          },
+          process.env.SECRET,
+          // TODO: SEt THIS TO 10 MINUTES *********
+          { expiresIn: "1000 minutes" } // The httpOnly cookie expires in 10 minutes, so this would only apply if that cookie is tampered with.
+        );
+
+        const mailOptions = {
+          from: process.env.MAILER_EMAIL_ID,
+          to: user.email,
+          template: "forgot-password-email",
+          subject: "Password Reset Request",
+          text: "That was easy!",
+          context: {
+            url:
+              process.env.DOMAIN +
+              "api/users/auth/reset_password?token=" +
+              JWTToken,
+            name: "Mike",
+          },
+        };
+
+        sendEmail(mailOptions)
+          .then((emailResponse) => {
+            return res.status(250).json({
+              message: "The email was sent!",
+            });
+          })
+          .catch((err) => {
+            console.log("Send email error: ", err);
+            return res.status(403).json({
+              message:
+                "There is an issue trying to send the email. Please try your request again. Error: EM-UC-1",
+            });
+          });
+      } else {
+        console.log(
+          "There is a temporary server issue. Please try your request again. Error: NS-UC 2"
+        );
+        return res.status(403).json({
+          message:
+            "There is a temporary issue accessing the required security data. Please try your request again. Error: NS-UC-2",
+        });
+      }
+    } catch (err) {
+      console.log(
+        "There is a temporary server issue. Please try your request again. Error: NS | ",
+        err
+      );
+      return res.status(500).json({
+        message:
+          "There is a temporary issue running part of the program on the server. Please try your request again and contact the website admin if the problem persists. Error: TC-UC | " +
+          err,
+      });
+    }
+  });
 };
 
 /////////////////////////////////////////
