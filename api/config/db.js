@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const User = require("../models/userModel.js");
 const StudyPlanItem = require("../models/studyPlanItemModel.js");
+const SiteContent = require("../models/siteContentModel.js");
 
 const connectDB = async () => {
   try {

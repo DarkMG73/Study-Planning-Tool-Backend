@@ -4,6 +4,7 @@ const userRoute = require("./api/routes/userRoute.js");
 // import User from "./api/models/userModel";
 const adminRoute = require("./api/routes/adminRoute.js");
 const studyPlanItemRoute = require("./api/routes/studyPlanItemRoute.js");
+const siteContentRoute = require("./api/routes/siteContentRoute.js");
 const bodyParser = require("body-parser");
 const jsonwebtoken = require("jsonwebtoken");
 const express = require("express");
@@ -158,6 +159,9 @@ app.use("/api/users", userLimiter, userRoute);
 
 //Creating API for Study Plan Item Info
 app.use("/api/studyPlan", studyPlanItemLimiter, studyPlanItemRoute);
+
+//Creating API for Site Content Info
+app.use("/api/content", studyPlanItemLimiter, siteContentRoute);
 
 //Creating API for admin functions
 app.use("/api/special-admin/", userLimiter, adminRoute);
