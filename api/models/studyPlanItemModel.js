@@ -50,7 +50,7 @@ const catalogItemSchema = mongoose.Schema(
       type: String,
     },
     tags: {
-      type: Array,
+      type: String,
     },
     itemnotes: {
       type: String,
