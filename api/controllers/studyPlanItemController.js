@@ -4,11 +4,11 @@ const mongoose = require("mongoose");
 const adminList = require("../data/adminList.js");
 
 function getStudyPlanItemModelAndCollection(user) {
-  // let collection = user ? user._id : "study-plan-item";
-  let collection = "study-plan-items";
-  // if (user && adminList["study-plan-item"].includes(user._id)) {
-  //   collection = "study-plan-item";
-  // }
+  let collection = user ? user._id : "1-demo-study-plan-item";
+  // let collection = "study-plan-items";
+  if (user && adminList["stud-plan-admin"].includes(user._id)) {
+    collection = "demo-study-plan-items";
+  }
   console.log("------ Collection: ", collection);
   return mongoose.model(collection, studyPlanItemSchema);
 }
@@ -209,6 +209,7 @@ module.exports.RemoveStudyPlanItem = asyncHandler(async (req, res) => {
       return new Error("Error saving studyPlan item.");
     });
 });
+
 module.exports.RemoveAllStudyPlanItems = asyncHandler(async (req, res) => {
   const StudyPlanItem = getStudyPlanItemModelAndCollection(req.user);
   StudyPlanItem.deleteMany({})

@@ -6,11 +6,10 @@ const catalogItemSchema = mongoose.Schema(
       type: String,
       required: true,
       unique: true,
+      index: true,
     },
     slug: {
       type: String,
-      required: true,
-      unique: true,
     },
     type: {
       type: String,
