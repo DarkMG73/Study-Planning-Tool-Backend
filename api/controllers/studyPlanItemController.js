@@ -29,7 +29,7 @@ module.exports.getStudyPlanItemById = asyncHandler(async (req, res) => {
   if (studyPlanItem) {
     res.json(studyPlanItem);
   } else {
-    res.status(404).json({ message: "StudyPlan Item not found" });
+    res.status(404).json({ message: "StudyPlan Item not found", err:  {code: 404, result: {}, writeErrors: []}});
     res.status(404);
     return new Error("StudyPlan item not found");
   }
@@ -47,7 +47,7 @@ module.exports.getStudyPlanItemByHashId = asyncHandler(async (req, res) => {
   if (studyPlanItem) {
     res.json(studyPlanItem);
   } else {
-    res.status(404).json({ message: "StudyPlan item not found" });
+    res.status(404).json({ message: "StudyPlan item not found", err:  {code: 404, result: {}, writeErrors: []} });
     res.status(404);
   }
 });
@@ -73,11 +73,10 @@ module.exports.AddStudyPlanItem = asyncHandler(async (req, res, next) => {
           message: "Error when trying to save the studyPlan item.",
           err: err,
         });
-        res.status(404);
         return new Error("Error saving studyPlan item.");
       });
   } else {
-    return res.status(401).json({ message: "Unauthorized user 1!!" });
+    return res.status(401).json({ message: "Unauthorized user 1!!", err:  {code: 401, result: {}, writeErrors: []} });
   }
 });
 
@@ -104,10 +103,9 @@ module.exports.AddManyStudyPlanItems = asyncHandler(async (req, res, next) => {
           message: "Error when trying to save the studyPlan item.",
           err: err,
         });
-        res.status(404);
       });
   } else {
-    return res.status(401).json({ message: "Unauthorized user 1!!" });
+    return res.status(401).json({ message: "Unauthorized user 1!!", err:  {code: 404, result: {}, writeErrors: []} });
   }
 });
 
@@ -182,10 +180,9 @@ module.exports.UpdateStudyPlanItem = asyncHandler(async (req, res) => {
           message: "Error when trying to save the studyPlan item.",
           err: err,
         });
-        res.status(404);
       });
   } else {
-    res.status(404).json({ message: "StudyPlan item not found" });
+    res.status(404).json({ message: "StudyPlan item not found", err:  {code: 404, result: {}, writeErrors: []} });
     res.status(404);
   }
 });
@@ -205,7 +202,6 @@ module.exports.RemoveStudyPlanItem = asyncHandler(async (req, res) => {
         message: "Error when trying to save the studyPlan item.",
         err: err,
       });
-      res.status(404);
       return new Error("Error saving studyPlan item.");
     });
 });
@@ -222,7 +218,6 @@ module.exports.RemoveAllStudyPlanItems = asyncHandler(async (req, res) => {
         message: "Error when trying to save the studyPlan item.",
         err: err,
       });
-      res.status(404);
       return new Error("Error saving studyPlan item.");
     });
 });
@@ -239,7 +234,7 @@ module.exports.StudyPlanItemModel = asyncHandler(async (req, res) => {
 //getAdminStudyPlanItems function to get all studyPlan items for the admin
 module.exports.getAdminStudyPlanItems = asyncHandler(async (req, res) => {
   console.log("--- getAdminStudyPlanItems ---");
-  if (!req.user) res.status(401).json({ message: "Access not authorized" });
+  if (!req.user) res.status(401).json({ message: "Access not authorized", err:  {code: 404, result: {}, writeErrors: []} });
 
   if (
     adminList["stud-plan-admin"] &&
@@ -247,7 +242,7 @@ module.exports.getAdminStudyPlanItems = asyncHandler(async (req, res) => {
   )
     res
       .status(403)
-      .json({ message: "Sorry, you do not have permission to access this." });
+      .json({ message: "Sorry, you do not have permission to access this.", err:  {code: 403, result: {}, writeErrors: [] }});
   const collection = "study-plan-item";
   const StudyPlanItem = mongoose.model(collection, studyPlanItemSchema);
   const studyPlanItems = await StudyPlanItem.find({});
