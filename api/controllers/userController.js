@@ -421,13 +421,8 @@ exports.forgot_password = function (req, res) {
 
   User.findOne({
     email: req.body.email,
-  }).then((err, user) => {
-    if (err) {
-      console.log(" --> 1 forgot_password Find User Error", err);
-      return res.status(401).json({
-        message: "There was a problem with authentication: " + err,
-      });
-    }
+  }).then((user) => {
+ 
     if (!user) {
       console.log(
         " --> 2 forgot_password There was a problem with authentication: User " +
@@ -504,7 +499,19 @@ exports.forgot_password = function (req, res) {
           err,
       });
     }
-  });
+  })    .catch((err) => {
+      console.log(" --> Catch err", err);
+         if (err) {
+      console.log(" --> 1 forgot_password Find User Error", err);
+      return res.status(401).json({
+        message: "There was a problem with authentication: " + err,
+      });
+    }
+    
+      return res.status(401).json({
+        message: "There was a problem with authentication: " + err,
+      });
+    });
 };
 
 /////////////////////////////////////////
