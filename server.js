@@ -64,13 +64,13 @@ const whitelist = [
   "http://localhost:3000/",
   "http://localhost:3001",
   "http://localhost:3001/",
-  "https://ignite-revolution.com/",
-  "https://ignite-revolution.com",
-  "https://www.ignite-revolution.com",
-  "https://www.ignite-revolution.com/",
-  "glassinteractive.com",
   "http://localhost:8000",
-  "https://api-iq.glassinteractive.com",
+  "https://studyplan.glassinteractive.com/",
+  "https://studyplan.glassinteractive.com",
+  "https://www.studyplan.glassinteractive.com",
+  "https://www.studyplan.glassinteractive.com/",
+  "studyplan.glassinteractive.com",
+  "https://www.studyplan.glassinteractive.com/api/",
 ];
 
 const options = {
@@ -153,6 +153,18 @@ try {
 // app.use(function (req, res) {
 //   res.status(404).send({ url: req.originalUrl + " not found" });
 // });
+
+//Creating API for user
+
+// const landingPage=(req, res)=> {
+
+//     var message = 'API for studyplan.glassinteractive.com\n',
+//         version = 'NodeJS ' + process.versions.node + '\n',
+//         response = [message, version].join('\n');
+//     res.send(response);
+// }
+// // API Landing Page
+// app.use("/", userLimiter, landingPage);
 
 //Creating API for user
 app.use("/api/users", userLimiter, userRoute);
