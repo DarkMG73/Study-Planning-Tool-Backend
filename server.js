@@ -100,6 +100,9 @@ app.use(cookieParser());
 
 try {
   app.use(function (req, res, next) {
+    console.log("req -------> ", req.params)
+     console.log("req -------> ", req.query)
+      console.log("req -------> ", req.body)
     // ****************************************************************
     // *** FOR DEV ONLY REMOVE FOR PROD ***
     // ****************************************************************
