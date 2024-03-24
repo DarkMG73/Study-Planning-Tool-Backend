@@ -112,7 +112,7 @@ module.exports.sign_in = asyncHandler(async (req, res) => {
             });
           }
         } else {
-          console.log("process.env.SECRET", process.env.SECRET);
+          // console.log("process.env.SECRET", process.env.SECRET);
           if (process.env.SECRET && process.env.SECRET != "undefined") {
             delete user._doc.isAdmin;
             return res.json({
