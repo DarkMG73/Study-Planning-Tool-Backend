@@ -2,6 +2,10 @@ const siteContentSchema = require("../models/siteContentModel.js");
 const asyncHandler = require("express-async-handler");
 const mongoose = require("mongoose");
 const adminList = require("../data/adminList.js");
+const { demoUser } = adminList;
+const exitIfDemoUser = (user_id) => {
+  return demoUser.includes(user_id);
+};
 
 function getSiteContentModelAndCollection(user) {
   // let collection = user ? user._id : "ms1-site-content";
@@ -12,6 +16,7 @@ function getSiteContentModelAndCollection(user) {
   console.log("------ Collection: ", collection);
   return mongoose.model(collection, siteContentSchema);
 }
+
 //getSiteContents function to get all catalog items
 module.exports.getSiteContents = asyncHandler(async (req, res) => {
   console.log("--- getSiteContents ---");
@@ -55,6 +60,12 @@ module.exports.getSiteContentByHashId = asyncHandler(async (req, res) => {
 /// ADD A CATALOG ITEMS ////////////////////////////
 module.exports.AddSiteContent = asyncHandler(async (req, res, next) => {
   console.log("------ AddSiteContent ------ ");
+  if (exitIfDemoUser(req.user._id)) {
+    res
+      .status(401)
+      .json({ message: "You are not authorized to perform this action." });
+    return;
+  }
 
   const siteContent = req.body.dataObj;
   const SiteContent = getSiteContentModelAndCollection(req.user);
@@ -84,6 +95,12 @@ module.exports.AddSiteContent = asyncHandler(async (req, res, next) => {
 /// ADD MANY CATALOG ITEMS /////////////////////////////
 module.exports.AddManySiteContents = asyncHandler(async (req, res, next) => {
   console.log("Saving Multiple Catalog Items");
+  if (exitIfDemoUser(req.user._id)) {
+    res
+      .status(401)
+      .json({ message: "You are not authorized to perform this action." });
+    return;
+  }
   const siteContents = req.body.outputDataArray;
   console.log("req.body", req.body);
   const SiteContent = getSiteContentModelAndCollection(req.user);
@@ -114,6 +131,12 @@ module.exports.AddManySiteContents = asyncHandler(async (req, res, next) => {
 /// UPDATE A CATALOG ITEM /////////////////////////////
 module.exports.UpdateSiteContent = asyncHandler(async (req, res) => {
   console.log("--- UpdateSiteContent ---");
+  if (exitIfDemoUser(req.user._id)) {
+    res
+      .status(401)
+      .json({ message: "You are not authorized to perform this action." });
+    return;
+  }
   const dataObj = req.body.dataObj;
   console.log("dataObj", dataObj);
   const SiteContent = getSiteContentModelAndCollection(req.user);
@@ -170,7 +193,7 @@ module.exports.UpdateSiteContent = asyncHandler(async (req, res) => {
     SiteContent.findOneAndUpdate(
       filter,
       { $set: groomedDataObject },
-      { new: false }
+      { new: false },
     )
       .then((doc) => {
         res.status(200).json({ message: "It worked.", doc: doc });
@@ -192,6 +215,12 @@ module.exports.UpdateSiteContent = asyncHandler(async (req, res) => {
 
 module.exports.RemoveSiteContent = asyncHandler(async (req, res) => {
   console.log("RemoveSiteContent", req.params);
+  if (exitIfDemoUser(req.user._id)) {
+    res
+      .status(401)
+      .json({ message: "You are not authorized to perform this action." });
+    return;
+  }
   const SiteContent = getSiteContentModelAndCollection(req.user);
 
   SiteContent.deleteOne({ identifier: req.params.identifier })
@@ -209,7 +238,14 @@ module.exports.RemoveSiteContent = asyncHandler(async (req, res) => {
       return new Error("Error saving catalog item.");
     });
 });
+
 module.exports.RemoveAllSiteContents = asyncHandler(async (req, res) => {
+  if (exitIfDemoUser(req.user._id)) {
+    res
+      .status(401)
+      .json({ message: "You are not authorized to perform this action." });
+    return;
+  }
   const SiteContent = getSiteContentModelAndCollection(req.user);
   SiteContent.deleteMany({})
     .then((doc) => {
@@ -259,7 +295,7 @@ module.exports.changeFieldNameInDB = asyncHandler(async (req, res) => {
     { "name.additional": { $exists: true } },
     { $rename: { id: "identifier" } },
     false,
-    true
+    true,
   );
   console.log("******************");
   console.log("*** The DB was updated with a name change ***");

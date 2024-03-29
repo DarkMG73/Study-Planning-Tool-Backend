@@ -2,16 +2,25 @@ const studyPlanItemSchema = require("../models/studyPlanItemModel.js");
 const asyncHandler = require("express-async-handler");
 const mongoose = require("mongoose");
 const adminList = require("../data/adminList.js");
+const { demoUser } = adminList;
+const exitIfDemoUser = (user_id) => {
+  return demoUser.includes(user_id);
+};
 
 function getStudyPlanItemModelAndCollection(user) {
   let collection = user ? user._id : "1-demo-study-plan-item";
   // let collection = "study-plan-items";
   if (user && adminList["stud-plan-admin"].includes(user._id)) {
     collection = "demo-study-plan-items";
+  } else if (user && adminList["demoUser"].includes(user._id)) {
+    console.log("user)))0", user);
+    collection = adminList.demoAdmin;
   }
+
   console.log("------ Collection: ", collection);
   return mongoose.model(collection, studyPlanItemSchema);
 }
+
 //getStudyPlanItems function to get all studyPlan items
 module.exports.getStudyPlanItems = asyncHandler(async (req, res) => {
   console.log("--- getStudyPlanItems ---");
@@ -29,7 +38,10 @@ module.exports.getStudyPlanItemById = asyncHandler(async (req, res) => {
   if (studyPlanItem) {
     res.json(studyPlanItem);
   } else {
-    res.status(404).json({ message: "StudyPlan Item not found", err:  {code: 404, result: {}, writeErrors: []}});
+    res.status(404).json({
+      message: "StudyPlan Item not found",
+      err: { code: 404, result: {}, writeErrors: [] },
+    });
     res.status(404);
     return new Error("StudyPlan item not found");
   }
@@ -47,7 +59,10 @@ module.exports.getStudyPlanItemByHashId = asyncHandler(async (req, res) => {
   if (studyPlanItem) {
     res.json(studyPlanItem);
   } else {
-    res.status(404).json({ message: "StudyPlan item not found", err:  {code: 404, result: {}, writeErrors: []} });
+    res.status(404).json({
+      message: "StudyPlan item not found",
+      err: { code: 404, result: {}, writeErrors: [] },
+    });
     res.status(404);
   }
 });
@@ -55,7 +70,12 @@ module.exports.getStudyPlanItemByHashId = asyncHandler(async (req, res) => {
 /// ADD A STUDY PLAN ITEMS ////////////////////////////
 module.exports.AddStudyPlanItem = asyncHandler(async (req, res, next) => {
   console.log("------ AddStudyPlanItem ------ ");
-
+  if (exitIfDemoUser(req.user._id)) {
+    res
+      .status(401)
+      .json({ message: "You are not authorized to perform this action." });
+    return;
+  }
   const studyPlanItem = req.body.dataObj;
   const StudyPlanItem = getStudyPlanItemModelAndCollection(req.user);
 
@@ -76,13 +96,22 @@ module.exports.AddStudyPlanItem = asyncHandler(async (req, res, next) => {
         return new Error("Error saving studyPlan item.");
       });
   } else {
-    return res.status(401).json({ message: "Unauthorized user 1!!", err:  {code: 401, result: {}, writeErrors: []} });
+    return res.status(401).json({
+      message: "Unauthorized user 1!!",
+      err: { code: 401, result: {}, writeErrors: [] },
+    });
   }
 });
 
 /// ADD MANY STUDY PLAN ITEMS /////////////////////////////
 module.exports.AddManyStudyPlanItems = asyncHandler(async (req, res, next) => {
   console.log("Saving Multiple StudyPlan Items");
+  if (exitIfDemoUser(req.user._id)) {
+    res
+      .status(401)
+      .json({ message: "You are not authorized to perform this action." });
+    return;
+  }
   const studyPlanItems = req.body.outputDataArray;
   console.log("req.body", req.body);
   const StudyPlanItem = getStudyPlanItemModelAndCollection(req.user);
@@ -105,13 +134,22 @@ module.exports.AddManyStudyPlanItems = asyncHandler(async (req, res, next) => {
         });
       });
   } else {
-    return res.status(401).json({ message: "Unauthorized user 1!!", err:  {code: 404, result: {}, writeErrors: []} });
+    return res.status(401).json({
+      message: "Unauthorized user 1!!",
+      err: { code: 404, result: {}, writeErrors: [] },
+    });
   }
 });
 
 /// UPDATE A STUDY PLAN ITEM /////////////////////////////
 module.exports.UpdateStudyPlanItem = asyncHandler(async (req, res) => {
   console.log("--- UpdateStudyPlanItem ---");
+  if (exitIfDemoUser(req.user._id)) {
+    res
+      .status(401)
+      .json({ message: "You are not authorized to perform this action." });
+    return;
+  }
   const dataObj = req.body.dataObj;
   console.log("dataObj", dataObj);
   const StudyPlanItem = getStudyPlanItemModelAndCollection(req.user);
@@ -168,7 +206,7 @@ module.exports.UpdateStudyPlanItem = asyncHandler(async (req, res) => {
     StudyPlanItem.findOneAndUpdate(
       filter,
       { $set: groomedDataObject },
-      { new: false }
+      { new: false },
     )
       .then((doc) => {
         res.status(200).json({ message: "It worked.", doc: doc });
@@ -182,13 +220,22 @@ module.exports.UpdateStudyPlanItem = asyncHandler(async (req, res) => {
         });
       });
   } else {
-    res.status(404).json({ message: "StudyPlan item not found", err:  {code: 404, result: {}, writeErrors: []} });
+    res.status(404).json({
+      message: "StudyPlan item not found",
+      err: { code: 404, result: {}, writeErrors: [] },
+    });
     res.status(404);
   }
 });
 
 module.exports.RemoveStudyPlanItem = asyncHandler(async (req, res) => {
   console.log("RemoveStudyPlanItem", req.params);
+  if (exitIfDemoUser(req.user._id)) {
+    res
+      .status(401)
+      .json({ message: "You are not authorized to perform this action." });
+    return;
+  }
   const StudyPlanItem = getStudyPlanItemModelAndCollection(req.user);
 
   StudyPlanItem.deleteOne({ identifier: req.params.identifier })
@@ -207,6 +254,12 @@ module.exports.RemoveStudyPlanItem = asyncHandler(async (req, res) => {
 });
 
 module.exports.RemoveAllStudyPlanItems = asyncHandler(async (req, res) => {
+  if (exitIfDemoUser(req.user._id)) {
+    res
+      .status(401)
+      .json({ message: "You are not authorized to perform this action." });
+    return;
+  }
   const StudyPlanItem = getStudyPlanItemModelAndCollection(req.user);
   StudyPlanItem.deleteMany({})
     .then((doc) => {
@@ -234,15 +287,20 @@ module.exports.StudyPlanItemModel = asyncHandler(async (req, res) => {
 //getAdminStudyPlanItems function to get all studyPlan items for the admin
 module.exports.getAdminStudyPlanItems = asyncHandler(async (req, res) => {
   console.log("--- getAdminStudyPlanItems ---");
-  if (!req.user) res.status(401).json({ message: "Access not authorized", err:  {code: 404, result: {}, writeErrors: []} });
+  if (!req.user)
+    res.status(401).json({
+      message: "Access not authorized",
+      err: { code: 404, result: {}, writeErrors: [] },
+    });
 
   if (
     adminList["stud-plan-admin"] &&
     !adminList["stud-plan-admin"].includes(req.user._id)
   )
-    res
-      .status(403)
-      .json({ message: "Sorry, you do not have permission to access this.", err:  {code: 403, result: {}, writeErrors: [] }});
+    res.status(403).json({
+      message: "Sorry, you do not have permission to access this.",
+      err: { code: 403, result: {}, writeErrors: [] },
+    });
   const collection = "study-plan-item";
   const StudyPlanItem = mongoose.model(collection, studyPlanItemSchema);
   const studyPlanItems = await StudyPlanItem.find({});
@@ -258,7 +316,7 @@ module.exports.changeFieldNameInDB = asyncHandler(async (req, res) => {
     { "name.additional": { $exists: true } },
     { $rename: { id: "identifier" } },
     false,
-    true
+    true,
   );
   console.log("******************");
   console.log("*** The DB was updated with a name change ***");

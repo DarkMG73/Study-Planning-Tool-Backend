@@ -7,6 +7,8 @@ const path = require("path");
 const async = require("async");
 const { sendEmail } = require("../tools/sendEmail");
 const jsonwebtoken = require("jsonwebtoken");
+const adminList = require("../data/adminList.js");
+const { demoUser } = adminList;
 const {
   usePasswordValidator,
   passwordRequirements,
@@ -299,6 +301,12 @@ module.exports.updateUserHistory = asyncHandler(async (req, res) => {
 // Update User History - Local Use
 ///////////////////////////////////
 const updateUserHistoryLocalFunction = async (dataObj, requestedUser) => {
+  if (exitIfDemoUser(req.user._id)) {
+    res
+      .status(401)
+      .json({ message: "You are not authorized to perform this action." });
+    return;
+  }
   let output = {};
   const filter = { _id: requestedUser._id };
   const user = await User.findOne(filter);
@@ -329,6 +337,12 @@ const updateUserHistoryLocalFunction = async (dataObj, requestedUser) => {
 ///////////////////////////////////
 module.exports.updateUserCurrentFilters = asyncHandler(async (req, res) => {
   console.log("updateCurrentFilters ---------");
+  if (exitIfDemoUser(req.user._id)) {
+    res
+      .status(401)
+      .json({ message: "You are not authorized to perform this action." });
+    return;
+  }
   const currentFiltersData = req.body.dataObj;
   console.log("currentFiltersData", currentFiltersData);
   const filter = { _id: req.user._id };
@@ -365,6 +379,12 @@ module.exports.updateUserCurrentFilters = asyncHandler(async (req, res) => {
 // Update Study Notes - Export
 ///////////////////////////////////
 module.exports.updateStudyNotes = asyncHandler(async (req, res) => {
+  if (exitIfDemoUser(req.user._id)) {
+    res
+      .status(401)
+      .json({ message: "You are not authorized to perform this action." });
+    return;
+  }
   const studyNotesData = req.body.dataObj;
   console.log("studyNotesData", studyNotesData);
   const filter = { _id: req.user._id };
