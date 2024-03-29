@@ -11,6 +11,9 @@ const {
   usePasswordValidator,
   passwordRequirements,
 } = require("../tools/usePasswordValidator");
+const exitIfDemoUser = (user_id) => {
+  return demoUser.includes(user_id);
+};
 
 ////////////////////////////////
 /// Handlebars Config
@@ -98,13 +101,13 @@ module.exports.sign_in = asyncHandler(async (req, res) => {
               token: jwt.sign(
                 { email: user.email, fullName: user.fullName, _id: user._id },
                 process.env.SECRET,
-                { expiresIn: "1 day" } // The httpOnly cookie expires in 12 hours, so this would only apply if that cookie is tampered with.
+                { expiresIn: "1 day" }, // The httpOnly cookie expires in 12 hours, so this would only apply if that cookie is tampered with.
               ),
               ...user._doc,
             });
           } else {
             console.log(
-              "There is a temporary server issue. Please try your request again. Error: NS-UC-1"
+              "There is a temporary server issue. Please try your request again. Error: NS-UC-1",
             );
             return res.status(403).json({
               message:
@@ -119,14 +122,14 @@ module.exports.sign_in = asyncHandler(async (req, res) => {
               token: jwt.sign(
                 { email: user.email, fullName: user.fullName, _id: user._id },
                 process.env.SECRET,
-                { expiresIn: "1 day" } // The httpOnly cookie expires in 12 hours, so this would only apply if that cookie is tampered with.
+                { expiresIn: "1 day" }, // The httpOnly cookie expires in 12 hours, so this would only apply if that cookie is tampered with.
               ),
 
               ...user._doc,
             });
           } else {
             console.log(
-              "There is a temporary server issue. Please try your request again. Error: NS-UC 2"
+              "There is a temporary server issue. Please try your request again. Error: NS-UC 2",
             );
             return res.status(403).json({
               message:
@@ -137,7 +140,7 @@ module.exports.sign_in = asyncHandler(async (req, res) => {
       } catch (err) {
         console.log(
           "There is a temporary server issue. Please try your request again. Error: NS | ",
-          err
+          err,
         );
 
         return res.status(500).json({
@@ -252,6 +255,14 @@ module.exports.getUserById = asyncHandler(async (req, res) => {
 ///////////////////////////////////
 module.exports.updateUserHistory = asyncHandler(async (req, res) => {
   console.log("updateUserHistory ---------");
+
+  if (exitIfDemoUser(req.user._id)) {
+    res
+      .status(401)
+      .json({ message: "You are not authorized to perform this action." });
+    return;
+  }
+
   const catalogItemHistoryData = req.body.dataObj;
   console.log("catalogItemHistoryData", catalogItemHistoryData);
   const filter = { _id: req.user._id };
@@ -263,7 +274,7 @@ module.exports.updateUserHistory = asyncHandler(async (req, res) => {
       {
         catalogItemHistory: catalogItemHistoryData,
       },
-      { new: false }
+      { new: false },
     )
       .then((doc) => {
         console.log("doc", doc.email);
@@ -329,7 +340,7 @@ module.exports.updateUserCurrentFilters = asyncHandler(async (req, res) => {
       {
         currentFilters: currentFiltersData,
       },
-      { new: false }
+      { new: false },
     )
       .then((doc) => {
         console.log("doc", doc);
@@ -365,7 +376,7 @@ module.exports.updateStudyNotes = asyncHandler(async (req, res) => {
       {
         studyNotes: studyNotesData,
       },
-      { new: false }
+      { new: false },
     )
       .then((doc) => {
         res.status(200).json({ message: "It worked.", doc: doc });
@@ -395,7 +406,7 @@ exports.render_forgot_password_template = function (req, res) {
   return res
     .set(
       "Content-Security-Policy",
-      "default-src *; style-src 'self' http://* 'unsafe-inline'; script-src 'self' http://* 'unsafe-inline' 'unsafe-eval'"
+      "default-src *; style-src 'self' http://* 'unsafe-inline'; script-src 'self' http://* 'unsafe-inline' 'unsafe-eval'",
     )
     .set("X-Frame-Options", "")
     .sendFile(path.resolve("./public/forgot-password.html"));
@@ -408,7 +419,7 @@ exports.render_reset_password_template = function (req, res) {
   return res
     .set(
       "Content-Security-Policy",
-      "default-src *; style-src 'self' http://* 'unsafe-inline'; script-src 'self' http://* 'unsafe-inline' 'unsafe-eval'"
+      "default-src *; style-src 'self' http://* 'unsafe-inline'; script-src 'self' http://* 'unsafe-inline' 'unsafe-eval'",
     )
     .sendFile(path.resolve("./public/reset-password.html"));
 };
@@ -421,93 +432,94 @@ exports.forgot_password = function (req, res) {
 
   User.findOne({
     email: req.body.email,
-  }).then((user) => {
- 
-    if (!user) {
-      console.log(
-        " --> 2 forgot_password There was a problem with authentication: User " +
-          req.body.email +
-          " was not found."
-      );
-      return res.status(401).json({
-        message:
-          "There was a problem with authentication: User " +
-          req.body.email +
-          ' was not found. Please fix the email address or, if you are not signed up yet, use the "Sign Up" button to get started.',
-      });
-    }
-
-    try {
-      if (process.env.SECRET && process.env.SECRET != "undefined") {
-        const JWTToken = jwt.sign(
-          {
-            email: user.email,
-            fullName: user.fullName,
-            _id: user._id,
-            passwordReset: true,
-          },
-          process.env.SECRET,
-          // TODO: SEt THIS TO 10 MINUTES *********
-          { expiresIn: "1000 minutes" } // The httpOnly cookie expires in 10 minutes, so this would only apply if that cookie is tampered with.
-        );
-
-        const mailOptions = {
-          from: process.env.MAILER_EMAIL_ID,
-          to: user.email,
-          template: "forgot-password-email",
-          subject: "Password Reset Request",
-          text: "That was easy!",
-          context: {
-            url:
-              process.env.DOMAIN +
-              "api/users/auth/reset_password?token=" +
-              JWTToken,
-            name: "Mike",
-          },
-        };
-
-        sendEmail(mailOptions)
-          .then((emailResponse) => {
-            return res.status(250).json({
-              message: "The email was sent!",
-            });
-          })
-          .catch((err) => {
-            console.log("Send email error: ", err);
-            return res.status(403).json({
-              message:
-                "There is an issue trying to send the email. Please try your request again. Error: EM-UC-1",
-            });
-          });
-      } else {
+  })
+    .then((user) => {
+      if (!user) {
         console.log(
-          "There is a temporary server issue. Please try your request again. Error: NS-UC 2"
+          " --> 2 forgot_password There was a problem with authentication: User " +
+            req.body.email +
+            " was not found.",
         );
-        return res.status(403).json({
+        return res.status(401).json({
           message:
-            "There is a temporary issue accessing the required security data. Please try your request again. Error: NS-UC-2",
+            "There was a problem with authentication: User " +
+            req.body.email +
+            ' was not found. Please fix the email address or, if you are not signed up yet, use the "Sign Up" button to get started.',
         });
       }
-    } catch (err) {
-      console.log(
-        "There is a temporary server issue. Please try your request again. Error: NS | ",
-        err
-      );
-      return res.status(500).json({
-        message:
-          "There is a temporary issue running part of the program on the server. Please try your request again and contact the website admin if the problem persists. Error: TC-UC | " +
+
+      try {
+        if (process.env.SECRET && process.env.SECRET != "undefined") {
+          const JWTToken = jwt.sign(
+            {
+              email: user.email,
+              fullName: user.fullName,
+              _id: user._id,
+              passwordReset: true,
+            },
+            process.env.SECRET,
+            // TODO: SEt THIS TO 10 MINUTES *********
+            { expiresIn: "1000 minutes" }, // The httpOnly cookie expires in 10 minutes, so this would only apply if that cookie is tampered with.
+          );
+
+          const mailOptions = {
+            from: process.env.MAILER_EMAIL_ID,
+            to: user.email,
+            template: "forgot-password-email",
+            subject: "Password Reset Request",
+            text: "That was easy!",
+            context: {
+              url:
+                process.env.DOMAIN +
+                "api/users/auth/reset_password?token=" +
+                JWTToken,
+              name: "Mike",
+            },
+          };
+
+          sendEmail(mailOptions)
+            .then((emailResponse) => {
+              return res.status(250).json({
+                message: "The email was sent!",
+              });
+            })
+            .catch((err) => {
+              console.log("Send email error: ", err);
+              return res.status(403).json({
+                message:
+                  "There is an issue trying to send the email. Please try your request again. Error: EM-UC-1",
+              });
+            });
+        } else {
+          console.log(
+            "There is a temporary server issue. Please try your request again. Error: NS-UC 2",
+          );
+          return res.status(403).json({
+            message:
+              "There is a temporary issue accessing the required security data. Please try your request again. Error: NS-UC-2",
+          });
+        }
+      } catch (err) {
+        console.log(
+          "There is a temporary server issue. Please try your request again. Error: NS | ",
           err,
-      });
-    }
-  })    .catch((err) => {
+        );
+        return res.status(500).json({
+          message:
+            "There is a temporary issue running part of the program on the server. Please try your request again and contact the website admin if the problem persists. Error: TC-UC | " +
+            err,
+        });
+      }
+    })
+    .catch((err) => {
       console.log(" --> Catch err", err);
-         if (err) {
-      console.log(" --> 1 forgot_password Find User Error", err);
-      return res.status(401).json({
-        message: "There was a problem with authentication: " + err,
-      });
-    }
-    
+      if (err) {
+        console.log(" --> 1 forgot_password Find User Error", err);
+        return res.status(401).json({
+          message: "There was a problem with authentication: " + err,
+        });
+      }
+
       return res.status(401).json({
         message: "There was a problem with authentication: " + err,
       });
@@ -535,7 +547,7 @@ exports.reset_password = async (req, res, next) => {
             return "   " + (i + 1) + ": " + groomedMessage + ". ";
           })
           .join(
-            "\n"
+            "\n",
           )}\n\nHere are all of the password requirements: ${passwordRequirements}`,
       });
   } else {
@@ -547,7 +559,7 @@ exports.reset_password = async (req, res, next) => {
         if (process.env.SECRET && process.env.SECRET != "undefined") {
           console.log(
             "<><><> There is a temporary server issue. Please try your request again. Error: NS-UC1",
-            err
+            err,
           );
           res.status(403).json({
             message:
@@ -557,7 +569,7 @@ exports.reset_password = async (req, res, next) => {
         } else {
           console.log(
             "<><><> There is an issue with the JWT. Error: JWT-UC1",
-            err
+            err,
           );
           res.status(401).json({
             message:
@@ -578,7 +590,7 @@ exports.reset_password = async (req, res, next) => {
 
         const updateResults = await updateUserHistoryLocalFunction(
           groomedNewPasswordData,
-          user
+          user,
         );
 
         console.log("<><><> updateResults: ", updateResults);
@@ -586,7 +598,7 @@ exports.reset_password = async (req, res, next) => {
         if (updateResults.status < 400) {
           console.log(
             "<><><> updateResults.status < 400",
-            updateResults.status < 400
+            updateResults.status < 400,
           );
 
           if (
