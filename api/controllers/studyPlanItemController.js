@@ -3,6 +3,7 @@ const asyncHandler = require("express-async-handler");
 const mongoose = require("mongoose");
 const adminList = require("../data/adminList.js");
 const { demoUser } = adminList;
+
 const exitIfDemoUser = (user_id) => {
   return demoUser.includes(user_id);
 };
