@@ -9,9 +9,9 @@ const exitIfDemoUser = (user_id) => {
 
 function getSiteContentModelAndCollection(user) {
   // let collection = user ? user._id : "ms1-site-content";
-  let collection = "ms1-site-contents";
-  // if (user && adminList["ms1-site-content"].includes(user._id)) {
-  //   collection = "ms1-site-content";
+  let collection = "studyPlan-site-contents";
+  // if (user && adminList["studyPlan-site-contents"].includes(user._id)) {
+  //   collection = "studyPlan-site-contents";
   // }
   console.log("------ Collection: ", collection);
   return mongoose.model(collection, siteContentSchema);
