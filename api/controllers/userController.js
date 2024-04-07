@@ -56,7 +56,6 @@ module.exports.register = asyncHandler(async (req, res) => {
       user.hash_password = undefined;
       return res.json(user);
     })
-
     .catch((err) => {
       if (err.name === "MongoError" && err.code === 11000) {
         // Duplicate username
