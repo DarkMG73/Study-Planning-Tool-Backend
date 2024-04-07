@@ -52,24 +52,16 @@ module.exports.register = asyncHandler(async (req, res) => {
 
   newUser
     .save()
-    .then((err, user) => {
-      if (err) {
-        console.log(" --> Resgister err", err);
-
-        return res.status(400).send({
-          message: err,
-        });
-      } else {
-        user.hash_password = undefined;
-        return res.json(user);
-      }
+    .then((user) => {
+      user.hash_password = undefined;
+      return res.json(user);
     })
     .catch((err) => {
       if (err.name === "MongoError" && err.code === 11000) {
         // Duplicate username
         return res
           .status(422)
-          .send({ succes: false, message: "User already exist!" });
+          .send({ success: false, message: "User already exist!" });
       }
 
       // Some other error
