@@ -8,12 +8,11 @@ const exitIfDemoUser = (user_id) => {
 };
 
 function getStudyPlanItemModelAndCollection(user) {
-  let collection = user ? user._id : "1-demo-study-plan-item";
+  let collection = user ? user._id : adminList.demoAdmin;
   // let collection = "study-plan-items";
   if (user && adminList["stud-plan-admin"].includes(user._id)) {
     collection = "demo-study-plan-items";
   } else if (user && adminList["demoUser"].includes(user._id)) {
-    console.log("user)))0", user);
     collection = adminList.demoAdmin;
   }
 

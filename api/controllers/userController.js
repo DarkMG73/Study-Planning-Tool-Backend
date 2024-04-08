@@ -61,7 +61,7 @@ module.exports.register = asyncHandler(async (req, res) => {
         // Duplicate username
         return res
           .status(422)
-          .send({ success: false, message: "User already exist!" });
+          .send({ success: false, message: "User already exist." });
       }
 
       // Some other error
