@@ -95,7 +95,7 @@ module.exports.sign_in = asyncHandler(async (req, res) => {
               token: jwt.sign(
                 { email: user.email, fullName: user.fullName, _id: user._id },
                 process.env.SECRET,
-                { expiresIn: "1 day" }, // The httpOnly cookie expires in 12 hours, so this would only apply if that cookie is tampered with.
+                { expiresIn: "1d" }, // The httpOnly cookie expires in 1 day, so this would only apply if that cookie is tampered with.
               ),
               ...user._doc,
             });
