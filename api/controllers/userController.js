@@ -95,7 +95,7 @@ module.exports.sign_in = asyncHandler(async (req, res) => {
               token: jwt.sign(
                 { email: user.email, fullName: user.fullName, _id: user._id },
                 process.env.SECRET,
-                { expiresIn: "1d" }, // The httpOnly cookie expires in 1 day, so this would only apply if that cookie is tampered with.
+                { expiresIn: 100 }, // The httpOnly cookie expires in 1 day, so this would only apply if that cookie is tampered with.
               ),
               ...user._doc,
             });
@@ -112,15 +112,23 @@ module.exports.sign_in = asyncHandler(async (req, res) => {
           // console.log("process.env.SECRET", process.env.SECRET);
           if (process.env.SECRET && process.env.SECRET != "undefined") {
             delete user._doc.isAdmin;
-            return res.json({
+            res.json({
               token: jwt.sign(
                 { email: user.email, fullName: user.fullName, _id: user._id },
                 process.env.SECRET,
-                { expiresIn: "1 day" }, // The httpOnly cookie expires in 12 hours, so this would only apply if that cookie is tampered with.
+                { expiresIn: 60 }, // The httpOnly cookie expires in 12 hours, so this would only apply if that cookie is tampered with.
               ),
 
               ...user._doc,
             });
+            console.log(
+              "%c⚪️►►►► %cline:124%cres",
+              "color:#fff;background:#ee6f57;padding:3px;border-radius:2px",
+              "color:#fff;background:#1f3c88;padding:3px;border-radius:2px",
+              "color:#fff;background:rgb(118, 77, 57);padding:3px;border-radius:2px",
+              res,
+            );
+            return res;
           } else {
             console.log(
               "There is a temporary server issue. Please try your request again. Error: NS-UC 2",
