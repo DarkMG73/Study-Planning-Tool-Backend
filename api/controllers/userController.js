@@ -16,6 +16,8 @@ const {
 const exitIfDemoUser = (user_id) => {
   return demoUser.includes(user_id);
 };
+// The httpOnly cookie expires in 1 day.
+const expirationTime = { expiresIn: 10 };
 
 ////////////////////////////////
 /// Handlebars Config
@@ -95,7 +97,7 @@ module.exports.sign_in = asyncHandler(async (req, res) => {
               token: jwt.sign(
                 { email: user.email, fullName: user.fullName, _id: user._id },
                 process.env.SECRET,
-                { expiresIn: 100 }, // The httpOnly cookie expires in 1 day, so this would only apply if that cookie is tampered with.
+                expirationTime,
               ),
               ...user._doc,
             });
@@ -109,26 +111,26 @@ module.exports.sign_in = asyncHandler(async (req, res) => {
             });
           }
         } else {
-          // console.log("process.env.SECRET", process.env.SECRET);
           if (process.env.SECRET && process.env.SECRET != "undefined") {
             delete user._doc.isAdmin;
-            res.json({
+            console.log("Ready to SIGN JWT ------>");
+
+            console.log(
+              "%c⚪️►►►► %cline:115%cexpirationTime",
+              "color:#fff;background:#ee6f57;padding:3px;border-radius:2px",
+              "color:#fff;background:#1f3c88;padding:3px;border-radius:2px",
+              "color:#fff;background:rgb(39, 72, 98);padding:3px;border-radius:2px",
+              expirationTime,
+            );
+            return res.json({
               token: jwt.sign(
                 { email: user.email, fullName: user.fullName, _id: user._id },
                 process.env.SECRET,
-                { expiresIn: 60 }, // The httpOnly cookie expires in 12 hours, so this would only apply if that cookie is tampered with.
+                expirationTime,
               ),
 
               ...user._doc,
             });
-            console.log(
-              "%c⚪️►►►► %cline:124%cres",
-              "color:#fff;background:#ee6f57;padding:3px;border-radius:2px",
-              "color:#fff;background:#1f3c88;padding:3px;border-radius:2px",
-              "color:#fff;background:rgb(118, 77, 57);padding:3px;border-radius:2px",
-              res,
-            );
-            return res;
           } else {
             console.log(
               "There is a temporary server issue. Please try your request again. Error: NS-UC 2",
@@ -478,8 +480,7 @@ exports.forgot_password = function (req, res) {
               passwordReset: true,
             },
             process.env.SECRET,
-            // TODO: SEt THIS TO 10 MINUTES *********
-            { expiresIn: "1000 minutes" }, // The httpOnly cookie expires in 10 minutes, so this would only apply if that cookie is tampered with.
+            expirationTime,
           );
 
           const mailOptions = {
