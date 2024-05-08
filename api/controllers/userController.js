@@ -17,7 +17,7 @@ const exitIfDemoUser = (user_id) => {
   return demoUser.includes(user_id);
 };
 // The httpOnly cookie expires in 1 day.
-const expirationTime = { expiresIn: 10 };
+const expirationTime = { expiresIn: "1d" };
 
 ////////////////////////////////
 /// Handlebars Config
