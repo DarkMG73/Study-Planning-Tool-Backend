@@ -8,7 +8,7 @@ const exitIfDemoUser = (user_id) => {
 };
 
 function getStudyPlanItemModelAndCollection(user) {
-  let collection = user ? user._id : '';
+  let collection = user ? user._id : "";
   // let collection = "study-plan-items";
   if (user && adminList["stud-plan-admin"].includes(user._id)) {
     collection = "demo-study-plan-items";
@@ -24,7 +24,10 @@ function getStudyPlanItemModelAndCollection(user) {
 module.exports.getStudyPlanItems = asyncHandler(async (req, res) => {
   console.log("--- getStudyPlanItems ---");
   const StudyPlanItem = getStudyPlanItemModelAndCollection(req.user);
-  const studyPlanItems = await StudyPlanItem.find({});
+  const studyPlanItems = await StudyPlanItem.find({
+    markcomplete: { $exists: true },
+  });
+  console.log("------ studyPlanItems: ", studyPlanItems);
   res.json(studyPlanItems);
 });
 
