@@ -100,9 +100,9 @@ app.use(cookieParser());
 
 try {
   app.use(function (req, res, next) {
-    console.log("req -------> ", req.params)
-     console.log("req -------> ", req.query)
-      console.log("req -------> ", req.body)
+    // console.log("req -------> ", req.params);
+    // console.log("req -------> ", req.query);
+    // console.log("req -------> ", req.body);
     // ****************************************************************
     // *** FOR DEV ONLY REMOVE FOR PROD ***
     // ****************************************************************
@@ -110,8 +110,17 @@ try {
     // console.log("process.env.PORT ", process.env.PORT);
     // console.log("process.env.DOMAIN ", process.env.DOMAIN);
     // ****************************************************************
-    console.log("A request------->");
+    console.log("A request------->", req.get("host"));
     // console.log("HEADERS -->", req.headers);
+    // Set up a whitelist of domains that can render us in an iframe
+    const XFRAME_WHITELIST = [
+      "https://www.studyplan.glassinteractive.com/",
+      "studyplan.glassinteractive.com",
+    ];
+    // If the domain matches, allow iframes from that domain
+    if (XFRAME_WHITELIST.indexOf(req.get("host")) !== -1) {
+      res.header("X-FRAME-OPTIONS", "ALLOW-FROM " + req.get("host"));
+    }
     if (
       req.headers &&
       req.headers.authorization &&
@@ -125,7 +134,7 @@ try {
             if (process.env.SECRET && process.env.SECRET != "undefined") {
               console.log(
                 "There is a temporary server issue. Please try your request again. Error: NS-SVR",
-                err
+                err,
               );
               return res.status(403).json({
                 message:
@@ -139,7 +148,7 @@ try {
           req.user = decode;
 
           next();
-        }
+        },
       );
     } else {
       req.user = undefined;
@@ -149,7 +158,7 @@ try {
 } catch (err) {
   console.log(
     "There is a temporary server issue. Please try your request again. Error: TC-SRV",
-    err
+    err,
   );
 }
 
@@ -186,5 +195,5 @@ const PORT = process.env.PORT || 8000;
 //Express js listen method to run project on http://localhost:8000
 app.listen(
   PORT,
-  console.log(`App is running in ${process.env.NODE_ENV} mode on port ${PORT}`)
+  console.log(`App is running in ${process.env.NODE_ENV} mode on port ${PORT}`),
 );
