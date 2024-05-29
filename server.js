@@ -113,14 +113,14 @@ try {
     console.log("A request------->", req.get("host"));
     // console.log("HEADERS -->", req.headers);
     // Set up a whitelist of domains that can render us in an iframe
-    const XFRAME_WHITELIST = [
-      "https://www.studyplan.glassinteractive.com/",
-      "studyplan.glassinteractive.com",
-    ];
+    // const XFRAME_WHITELIST = [
+    //   "https://www.studyplan.glassinteractive.com/",
+    //   "studyplan.glassinteractive.com",
+    // ];
     // If the domain matches, allow iframes from that domain
-    if (XFRAME_WHITELIST.indexOf(req.get("host")) !== -1) {
-      res.header("X-FRAME-OPTIONS", "ALLOW-FROM " + req.get("host"));
-    }
+
+    res.header("X-FRAME-OPTIONS", "ALLOW-FROM " + req.get("host"));
+
     if (
       req.headers &&
       req.headers.authorization &&
