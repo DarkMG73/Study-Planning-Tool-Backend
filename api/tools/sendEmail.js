@@ -34,12 +34,13 @@ module.exports.sendEmail = function (mailOptionsObj) {
     },
   };
 
-  console.log("groomedMailOptionsObj", groomedMailOptionsObj);
+  // console.log("groomedMailOptionsObj", groomedMailOptionsObj);
   return new Promise((resolve, reject) => {
     let response = { success: null };
-    console.log("sendEmail");
 
-    console.log("sendEmail: Begin email sending...");
+    // console.log("sendEmail");
+    // console.log("sendEmail: Begin email sending...");
+
     const transporter = nodemailer.createTransport({
       host: "mail.glassinteractive.com",
       port: 465,
@@ -48,16 +49,16 @@ module.exports.sendEmail = function (mailOptionsObj) {
         user: process.env.MAILER_EMAIL_ID,
         pass: process.env.MAILER_PASSWORD,
       },
-      tls: {
-        // do not fail on invalid certs
-        rejectUnauthorized: false,
-      },
+      // tls: {
+      //   // do not fail on invalid certs
+      //   rejectUnauthorized: false,
+      // },
       debug: true,
     });
 
-    console.log("sendEmail: transporter: ", transporter);
+    // console.log("sendEmail: transporter: ", transporter);
+    // console.log("sendEmail: groomedMailOptionsObj: ", groomedMailOptionsObj);
 
-    console.log("sendEmail: groomedMailOptionsObj: ", groomedMailOptionsObj);
     handlebarsOptions = {
       viewEngine: {
         extname: ".html", // handlebars extension
@@ -75,10 +76,12 @@ module.exports.sendEmail = function (mailOptionsObj) {
     console.log("handlebarsOptions", handlebarsOptions);
     transporter.use("compile", hbs(handlebarsOptions));
     transporter.sendMail(groomedMailOptionsObj, function (error, info) {
-      console.log("error **** ", error);
-      console.log("info **** ", info);
+      // console.log("error **** ", error);
+      // console.log("info **** ", info);
+
       if (error) {
-        console.log(error);
+        // console.log(error);
+
         resolve({
           message: "An error occurred trying to send the email",
           data: error,
