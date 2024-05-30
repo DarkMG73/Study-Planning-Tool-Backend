@@ -303,7 +303,7 @@ module.exports.updateUserHistory = asyncHandler(async (req, res) => {
 // Update User History - Local Use
 ///////////////////////////////////
 const updateUserHistoryLocalFunction = async (dataObj, requestedUser) => {
-  if (exitIfDemoUser(req.user._id)) {
+  if (exitIfDemoUser(requestedUser._id)) {
     res
       .status(401)
       .json({ message: "You are not authorized to perform this action." });
