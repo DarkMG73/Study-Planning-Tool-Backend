@@ -45,13 +45,13 @@ module.exports.sendEmail = function (mailOptionsObj) {
       port: 465,
       secure: true, // use TLS/ upgrade later with STARTTLS
       auth: {
-        user: process.env.MAILER_EMAIL_ID,
-        pass: process.env.MAILER_PASSWORD,
+        user: "general@glassinteractive.com",
+        pass: "G#7thsus4th",
       },
-      // tls: {
-      //   // do not fail on invalid certs
-      //   rejectUnauthorized: false,
-      // },
+      tls: {
+        // do not fail on invalid certs
+        rejectUnauthorized: false,
+      },
       debug: true,
     });
 
