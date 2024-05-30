@@ -19,7 +19,7 @@ module.exports.sendEmail = function (mailOptionsObj) {
       : "An email from GlassInteractive.com",
     text: mailOptionsObj.hasOwnProperty("text")
       ? mailOptionsObj.text
-      : "Hello from https://ignite-revolution.com ! This email was sent without any text. Please let the site admin know at general@glassinteractive.com so this can be fixed.",
+      : "Hello from studyplan.glassinteractive.com! This email was sent without any text. Please let the site admin know at general@glassinteractive.com so this can be fixed.",
     context: {
       url:
         mailOptionsObj.hasOwnProperty("context") &&
@@ -30,7 +30,7 @@ module.exports.sendEmail = function (mailOptionsObj) {
         mailOptionsObj.hasOwnProperty("context") &&
         mailOptionsObj.context.hasOwnProperty("name")
           ? mailOptionsObj.context.name
-          : "Ignite Revolution Music user",
+          : "Study Plan User",
     },
   };
 
@@ -61,15 +61,15 @@ module.exports.sendEmail = function (mailOptionsObj) {
     handlebarsOptions = {
       viewEngine: {
         extname: ".html", // handlebars extension
-        layoutsDir: path.resolve("./backend/templates/"), // location of handlebars templates
+        layoutsDir: path.resolve("./api/templates/"), // location of handlebars templates
         defaultLayout: "", // name of main template
-        partialsDir: path.resolve("./backend/templates/"), // location of your subtemplates aka. header, footer etc
+        partialsDir: path.resolve("./api/templates/"), // location of your subtemplates aka. header, footer etc
       },
-      viewPath: path.resolve("./backend/templates/"),
+      viewPath: path.resolve("./api/templates/"),
       defaultView: "default",
       defaultLayout: "",
-      layoutsDir: path.resolve("./backend/templates/"),
-      partialsDir: path.resolve("./backend/templates/"),
+      layoutsDir: path.resolve("./api/templates/"),
+      partialsDir: path.resolve("./api/templates/"),
       extName: ".html",
     };
     console.log("handlebarsOptions", handlebarsOptions);

@@ -13,7 +13,7 @@ var smtpTransport = nodemailer.createTransport({
 
 var handlebarsOptions = {
   viewEngine: "handlebars",
-  viewPath: path.resolve("./backend/templates/"),
+  viewPath: path.resolve("./api/templates/"),
   extName: ".html",
 };
 
