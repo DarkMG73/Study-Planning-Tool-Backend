@@ -41,7 +41,7 @@ module.exports.sendEmail = function (mailOptionsObj) {
 
     console.log("sendEmail: Begin email sending...");
     const transporter = nodemailer.createTransport({
-      host: "mi3-ts5.a2hosting.com",
+      host: "mail.glassinteractive.com",
       port: 465,
       secure: true, // use TLS/ upgrade later with STARTTLS
       auth: {
