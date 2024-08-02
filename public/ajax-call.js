@@ -16,12 +16,14 @@ function resetPasswordClicked(event) {
     data,
     "http://localhost:8000/api/users/auth/reset_password",
     function (status, response) {
-      if (status == 200) {
-        alert("successfully sent");
+      if (status < 400) {
+        alert(
+          "If the email address you provided is found in our system, an email will arrive within ten minutes. If no email arrives, please try a different email address that you might have used when you registered.\n\nIf you can not find the correct email address, contact us at general@glassinteractive.com and we will work with you to get your password changed.",
+        );
       } else {
         alert("Error", status);
       }
-    }
+    },
   );
 }
 
