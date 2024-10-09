@@ -1,5 +1,6 @@
 var resetPasswordClickEvt = document.getElementById("resetPasswordClickEvt");
 
+// Reset
 resetPasswordClickEvt.addEventListener("click", resetPasswordClicked);
 
 function resetPasswordClicked(event) {
